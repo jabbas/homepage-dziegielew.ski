@@ -44,6 +44,8 @@ container_started=false
 
 cleanup() {
   if [[ "$container_started" == true ]]; then
+    # Sprzątanie nie może przesłonić wyniku testów: kontener mógł już zniknąć
+    # (np. --serve przerwane Ctrl+C), a wtedy `rm` zwraca błąd.
     "$engine" rm --force "$container_name" >/dev/null 2>&1 || true
   fi
   rm -rf "$work"
@@ -156,12 +158,17 @@ status=""
 
 # request <Host> <ścieżka>: wynik w $status, $headers_file i $body_file.
 request() {
+  # `|| true`: brak połączenia (kod curl ≠ 0) nie ma przerywać skryptu przez
+  # `set -e`; curl i tak wypisuje wtedy 000, więc asercje na statusie padną
+  # z czytelnym komunikatem FAIL.
   status="$(curl --silent --output "$body_file" --dump-header "$headers_file" \
     --write-out '%{http_code}' --header "Host: $1" "$base_url$2" || true)"
 }
 
 # header_values <nazwa nagłówka>: wartości wszystkich wystąpień, po jednej w wierszu.
 header_values() {
+  # `|| true`: grep zwraca 1, gdy nagłówka nie ma — to poprawny wynik (pusta
+  # wartość), na którym polegają testy „brak nagłówka” (np. no hsts).
   { grep -i "^$1:" "$headers_file" || true; } | tr -d '\r' | sed -E "s/^[^:]*:[[:space:]]*//"
 }
 
@@ -174,13 +181,18 @@ body() { cat "$body_file"; }
 # konfiguracji nie przysłonił pozostałych wyników.
 ready=false
 for _ in $(seq 1 20); do
+  # `|| true`: dopóki nginx nie nasłuchuje, curl kończy się błędem — to
+  # oczekiwane przy oczekiwaniu na start, kolejna iteracja ponawia próbę.
   if [[ "$(curl --silent --output /dev/null --write-out '%{http_code}' --header 'Host: probe' "$base_url/healthz" || true)" != 000 ]]; then
     ready=true
     break
   fi
   sleep 0.5
 done
-container_logs="$("$engine" logs "$container_name" 2>&1 || true)"
+# Bez `|| true`: jeśli nie da się odczytać logów, test „starts read-only”
+# nie może po cichu przejść (brak logów = brak sprawdzenia `emerg`), więc
+# `set -e` przerywa skrypt.
+container_logs="$("$engine" logs "$container_name" 2>&1)"
 if [[ "$ready" == true && "$container_logs" != *emerg* ]]; then
   pass "starts read-only"
 else
