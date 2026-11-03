@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-nginx
+  labels:
+    {{- include "homepage.labels" . | nindent 4 }}
+data:
+  # Plik konfiguracji przechodzi przez tpl, więc może używać .Values.canonicalHost
+  # i .Values.redirectHosts.
+  default.conf: |
+    {{- tpl (.Files.Get "files/nginx/default.conf") . | trim | nindent 4 }}

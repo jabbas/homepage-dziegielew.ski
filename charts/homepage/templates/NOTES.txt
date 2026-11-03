@@ -1,0 +1,7 @@
+Strona https://{{ .Values.canonicalHost }} jest serwowana przez nginx (liczba replik: {{ .Values.replicaCount }}).
+{{- range .Values.redirectHosts }}
+Host {{ . }} jest przekierowywany (301) na https://{{ $.Values.canonicalHost }}.
+{{- end }}
+
+Sprawdzenie:
+  kubectl get pods -n {{ .Release.Namespace }} -l app.kubernetes.io/instance={{ .Release.Name }}

@@ -1,0 +1,29 @@
+{{- /*
+Każdy plik z files/site/* to klucz ConfigMapy o nazwie pliku (katalog jest
+płaski). Obrazy trafiają do binaryData (base64), reszta do data.
+*/ -}}
+{{- $binaryExtensions := list "jpg" "jpeg" "png" "webp" "ico" -}}
+{{- $textFiles := dict -}}
+{{- $binaryFiles := dict -}}
+{{- range $path, $_ := .Files.Glob "files/site/*" -}}
+  {{- $extension := base $path | ext | trimPrefix "." | lower -}}
+  {{- if has $extension $binaryExtensions -}}
+    {{- $_ := set $binaryFiles (base $path) ($.Files.Get $path | b64enc) -}}
+  {{- else -}}
+    {{- $_ := set $textFiles (base $path) ($.Files.Get $path) -}}
+  {{- end -}}
+{{- end -}}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-site
+  labels:
+    {{- include "homepage.labels" . | nindent 4 }}
+{{- with $textFiles }}
+data:
+  {{- toYaml . | nindent 2 }}
+{{- end }}
+{{- with $binaryFiles }}
+binaryData:
+  {{- toYaml . | nindent 2 }}
+{{- end }}

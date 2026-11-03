@@ -1,0 +1,63 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "image",
+    "replicaCount",
+    "resources",
+    "ingress",
+    "canonicalHost",
+    "redirectHosts"
+  ],
+  "properties": {
+    "image": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["repository", "tag", "digest"],
+      "properties": {
+        "repository": { "type": "string", "minLength": 1 },
+        "tag": { "type": "string", "minLength": 1 },
+        "digest": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" }
+      }
+    },
+    "replicaCount": { "type": "integer", "minimum": 1 },
+    "resources": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["requests", "limits"],
+      "properties": {
+        "requests": { "$ref": "#/definitions/resourceQuantities" },
+        "limits": { "$ref": "#/definitions/resourceQuantities" }
+      }
+    },
+    "ingress": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["className"],
+      "properties": {
+        "className": { "type": "string", "minLength": 1 }
+      }
+    },
+    "canonicalHost": { "$ref": "#/definitions/hostname" },
+    "redirectHosts": {
+      "type": "array",
+      "items": { "$ref": "#/definitions/hostname" }
+    }
+  },
+  "definitions": {
+    "hostname": {
+      "type": "string",
+      "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$"
+    },
+    "resourceQuantities": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["cpu", "memory"],
+      "properties": {
+        "cpu": { "type": "string", "minLength": 1 },
+        "memory": { "type": "string", "minLength": 1 }
+      }
+    }
+  }
+}

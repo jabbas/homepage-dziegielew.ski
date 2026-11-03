@@ -1,0 +1,26 @@
+# Wartości domyślne SĄ wartościami produkcyjnymi tej strony — chart ma jednego
+# użytkownika, więc HelmRelease nie musi niczego nadpisywać.
+
+image:
+  repository: nginxinc/nginx-unprivileged
+  tag: "1.30.6-alpine"
+  # Skrót listy manifestów (obraz wieloarchitekturowy).
+  digest: "sha256:f5116ed4606f3eb015dd4a8e28cb9b351476dc0ad4bc6e9f93b19cec130cdf03"
+
+replicaCount: 2
+
+resources:
+  requests:
+    cpu: 10m
+    memory: 16Mi
+  limits:
+    cpu: 100m
+    memory: 64Mi
+
+ingress:
+  className: traefik-external
+
+# Adres kanoniczny strony oraz hosty przekierowywane na niego (301).
+canonicalHost: dziegielew.ski
+redirectHosts:
+  - www.dziegielew.ski
