@@ -97,6 +97,7 @@ expect_success "kubeconform" kubeconform -strict -summary "$rendered"
 
 expect_schema_rejection "schema rejects unknown key" --set unknownKey=1
 expect_schema_rejection "schema rejects bad digest" --set image.digest=latest
+expect_schema_rejection "schema rejects empty redirectHosts" --set-json 'redirectHosts=[]'
 
 expect_equal "deployment replicas" "2" "$(query Deployment '.spec.replicas')"
 
