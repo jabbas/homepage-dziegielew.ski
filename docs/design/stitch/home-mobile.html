@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Grzegorz Dzięgielewski — Mobile</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      color: #1C1917;
+      background-color: #FFFFFF;
+      -webkit-font-smoothing: antialiased;
+    }
+    .font-mono-code {
+      font-family: 'JetBrains Mono', monospace;
+    }
+  </style>
+</head>
+<body class="min-h-screen bg-white text-stone-900 flex flex-col justify-between selection:bg-teal-100 selection:text-teal-900">
+  <!-- Top Bar -->
+  <header class="w-full px-6 pt-7 pb-4 flex items-center justify-between border-b border-stone-100">
+    <a href="#" class="font-semibold text-[15px] tracking-tight text-stone-900 hover:text-teal-800 transition-colors">
+      dziegielew.ski
+    </a>
+    <nav class="flex items-center space-x-5 text-[14px]">
+      <a href="#" class="text-stone-900 font-medium hover:text-teal-700 transition-colors">Home</a>
+      <a href="#" class="text-stone-500 hover:text-stone-900 transition-colors">CV</a>
+    </nav>
+  </header>
+
+  <!-- Main Content -->
+  <main class="w-full px-6 pt-8 pb-10 flex-1 flex flex-col">
+    <!-- Intro Block (Stacked, Centered) -->
+    <div class="flex flex-col items-center text-center">
+      <div class="relative w-[120px] h-[120px] mb-5">
+        <img 
+          src="https://lh3.googleusercontent.com/aida/AEtjO1X-_yGyALabyDBJIlbb5QRvhP02nAqSyf_p3jHox4YG-3Ond3yDFjNsUim_CWVhcQxJ706De2m2CR6IZMmq8x7tha83GYXE6y_DGxNwPxiLZppza3Ruzp6H87S97yp-U4rf3oOQFZsnmggo0m2kCHMmZOMdD7orYn1jDRHHj3CIjem4I3zuQsfVF2yVyKx7YGy_9VUrxc4i3E15EItnEGs0zS1gPDA-UL35BXRsV-JGo0ocUJ7hkmaWfA-2" 
+          alt="Grzegorz Dzięgielewski" 
+          class="w-[120px] h-[120px] rounded-full object-cover object-top border border-stone-200/80 shadow-sm"
+        />
+      </div>
+      <h1 class="text-2xl font-bold tracking-tight text-stone-900 leading-snug">
+        Grzegorz Dzięgielewski
+      </h1>
+      <p class="text-[15px] font-medium text-stone-700 mt-1">
+        Tech Lead DevOps/Kubernetes Engineer
+      </p>
+      <div class="inline-flex items-center gap-1.5 text-stone-500 text-xs mt-2.5">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-3.5 h-3.5 text-stone-400">
+          <path fill-rule="evenodd" d="m9.69 18.933.003.001C9.89 19.02 10 19 10 19s.11.02.308-.066l.002-.001.006-.003.018-.008a5.741 5.741 0 0 0 .281-.14c.186-.096.446-.24.757-.433.62-.384 1.445-.966 2.274-1.765C15.302 14.988 17 12.493 17 9A7 7 0 1 0 3 9c0 3.492 1.698 5.988 3.355 7.588a13.23 13.23 0 0 0 2.274 1.765 11.23 11.23 0 0 0 1.038.573l.018.008.006.003ZM10 11.25a2.25 2.25 0 1 0 0-4.5 2.25 2.25 0 0 0 0 4.5Z" clip-rule="evenodd" />
+        </svg>
+        <span>Kraków, Poland</span>
+      </div>
+    </div>
+
+    <!-- About Paragraph -->
+    <div class="mt-8">
+      <p class="text-[15px] leading-relaxed text-stone-600 text-left">
+        Linux user since 1995 — from running a neighbourhood network in the late '90s, through Akamai and Sabre, to leading Kubernetes platform work at Novomatic Technologies today. I like systems that are simple enough to explain and boring enough to trust.
+      </p>
+    </div>
+
+    <!-- Links List -->
+    <div class="mt-8 border-t border-b border-stone-200 divide-y divide-stone-200">
+      <a href="mailto:jabbas@jabbas.eu" class="flex items-center justify-between py-3.5 text-[14px] group">
+        <span class="text-stone-500 group-hover:text-stone-700 transition-colors">Email</span>
+        <span class="font-medium text-stone-900 group-hover:text-teal-700 transition-colors">jabbas@jabbas.eu</span>
+      </a>
+      <a href="https://github.com/jabbas" target="_blank" rel="noopener noreferrer" class="flex items-center justify-between py-3.5 text-[14px] group">
+        <span class="text-stone-500 group-hover:text-stone-700 transition-colors">GitHub</span>
+        <span class="font-medium text-stone-900 group-hover:text-teal-700 transition-colors">github.com/jabbas</span>
+      </a>
+      <a href="https://linkedin.com/in/jabbas" target="_blank" rel="noopener noreferrer" class="flex items-center justify-between py-3.5 text-[14px] group">
+        <span class="text-stone-500 group-hover:text-stone-700 transition-colors">LinkedIn</span>
+        <span class="font-medium text-stone-900 group-hover:text-teal-700 transition-colors">linkedin.com/in/jabbas</span>
+      </a>
+    </div>
+
+    <!-- Full-width Outlined Accent Link -->
+    <div class="mt-6">
+      <a href="#" class="flex items-center justify-center gap-1.5 w-full py-3 px-4 border border-[#0F766E] text-[#0F766E] rounded-md font-medium text-[14px] hover:bg-teal-50/50 active:bg-teal-100/50 transition-colors">
+        <span>CV</span>
+        <span class="text-base leading-none">→</span>
+      </a>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="w-full px-6 py-6 border-t border-stone-100 text-center">
+    <p class="font-mono-code text-[11px] text-stone-400 tracking-tight">
+      $ whoami → jabbas · © 2026 Grzegorz Dzięgielewski
+    </p>
+  </footer>
+</body>
+</html>

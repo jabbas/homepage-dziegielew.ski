@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Grzegorz Dzięgielewski — CV</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      color: #1c1917;
+      background-color: #ffffff;
+      -webkit-font-smoothing: antialiased;
+    }
+    .font-mono {
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .text-accent {
+      color: #0f766e;
+    }
+    .hover-accent:hover {
+      color: #0f766e;
+      text-decoration: underline;
+    }
+    @media print {
+      @page {
+        size: A4;
+        margin: 1.5cm 1.5cm 1.5cm 1.5cm;
+      }
+      body {
+        background: #ffffff !important;
+        color: #000000 !important;
+        font-size: 11pt;
+      }
+      header, footer {
+        display: none !important;
+      }
+      .no-print {
+        display: none !important;
+      }
+      .page-break-inside-avoid {
+        break-inside: avoid;
+        page-break-inside: avoid;
+      }
+      a {
+        text-decoration: none !important;
+        color: inherit !important;
+      }
+      .cv-container {
+        max-width: 100% !important;
+        padding: 0 !important;
+        margin: 0 !important;
+      }
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between bg-white text-stone-900 selection:bg-teal-100 selection:text-teal-900">
+
+  <!-- Header / Top Bar -->
+  <header class="w-full border-b border-stone-100 py-6 px-6 sm:px-10">
+    <div class="max-w-[760px] mx-auto flex items-center justify-between text-sm">
+      <a href="#" class="font-medium tracking-tight text-stone-900 hover:text-stone-600 transition-colors">dziegielew.ski</a>
+      <nav class="flex items-center space-x-6 text-sm">
+        <a href="#" class="text-stone-500 hover:text-stone-900 transition-colors">Home</a>
+        <a href="#" class="font-medium text-stone-900 border-b border-stone-900 pb-0.5">CV</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="w-full flex-grow px-6 sm:px-10 py-10 md:py-14 cv-container">
+    <div class="max-w-[760px] mx-auto space-y-12">
+
+      <!-- CV Header -->
+      <section class="flex flex-col-reverse sm:flex-row sm:items-start justify-between gap-6 pb-8 border-b border-stone-200">
+        <div class="space-y-3">
+          <div>
+            <h1 class="text-2xl sm:text-3xl font-bold tracking-tight text-stone-900">Grzegorz Dzięgielewski</h1>
+            <p class="text-base text-stone-600 font-normal mt-1">Tech Lead DevOps/Kubernetes Engineer</p>
+            <p class="text-sm text-stone-500 mt-0.5 flex items-center gap-1.5">
+              <span>Kraków, Poland</span>
+            </p>
+          </div>
+
+          <div class="pt-2 text-sm text-stone-600 flex flex-wrap items-center gap-y-1 gap-x-2">
+            <a href="mailto:jabbas@jabbas.eu" class="text-accent hover:underline">jabbas@jabbas.eu</a>
+            <span class="text-stone-300">·</span>
+            <a href="https://github.com/jabbas" target="_blank" rel="noopener noreferrer" class="text-accent hover:underline">github.com/jabbas</a>
+            <span class="text-stone-300">·</span>
+            <a href="https://linkedin.com/in/jabbas" target="_blank" rel="noopener noreferrer" class="text-accent hover:underline">linkedin.com/in/jabbas</a>
+          </div>
+        </div>
+
+        <div class="flex-shrink-0">
+          <img src="https://lh3.googleusercontent.com/aida/AEtjO1X-_yGyALabyDBJIlbb5QRvhP02nAqSyf_p3jHox4YG-3Ond3yDFjNsUim_CWVhcQxJ706De2m2CR6IZMmq8x7tha83GYXE6y_DGxNwPxiLZppza3Ruzp6H87S97yp-U4rf3oOQFZsnmggo0m2kCHMmZOMdD7orYn1jDRHHj3CIjem4I3zuQsfVF2yVyKx7YGy_9VUrxc4i3E15EItnEGs0zS1gPDA-UL35BXRsV-JGo0ocUJ7hkmaWfA-2" alt="Grzegorz Dzięgielewski" class="w-24 h-24 sm:w-[120px] sm:h-[120px] rounded-full object-cover border border-stone-200 shadow-none">
+        </div>
+      </section>
+
+      <!-- Section: Professional Experience -->
+      <section class="space-y-6 page-break-inside-avoid">
+        <h2 class="text-xs font-semibold tracking-widest uppercase text-stone-400">Professional Experience</h2>
+
+        <div class="space-y-3.5 text-sm">
+          <div class="grid grid-cols-1 sm:grid-cols-[130px_1fr] gap-x-6 gap-y-0.5">
+            <div class="text-stone-400 font-mono text-xs pt-0.5 tabular-nums">2024 – present</div>
+            <div class="text-stone-800"><span class="italic font-normal">Tech Lead DevOps/Kubernetes Engineer</span> at <span class="text-accent">Novomatic Technologies Poland</span></div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-[130px_1fr] gap-x-6 gap-y-0.5">
+            <div class="text-stone-400 font-mono text-xs pt-0.5 tabular-nums">2024</div>
+            <div class="text-stone-800"><span class="italic font-normal">Senior DevOps/Kubernetes Engineer</span> at <span class="text-accent">Novomatic Technologies Poland</span></div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-[130px_1fr] gap-x-6 gap-y-0.5">
+            <div class="text-stone-400 font-mono text-xs pt-0.5 tabular-nums">2021 – 2024</div>
+            <div class="text-stone-800"><span class="italic font-normal">Principal DevOps/Kubernetes Engineer</span> at <span class="text-accent">Sabre</span></div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-[130px_1fr] gap-x-6 gap-y-0.5">
+            <div class="text-stone-400 font-mono text-xs pt-0.5 tabular-nums">2019 – 2021</div>
+            <div class="text-stone-800"><span class="italic font-normal">Team Lead DevOps/Integration Engineer</span> at <span class="text-accent">Sabre</span></div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-[130px_1fr] gap-x-6 gap-y-0.5">
+            <div class="text-stone-400 font-mono text-xs pt-0.5 tabular-nums">2017 – 2019</div>
+            <div class="text-stone-800"><span class="italic font-normal">Senior DevOps/Integration Engineer</span> at <span class="text-accent">Sabre</span></div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-[130px_1fr] gap-x-6 gap-y-0.5">
+            <div class="text-stone-400 font-mono text-xs pt-0.5 tabular-nums">2016 – 2017</div>
+            <div class="text-stone-800"><span class="italic font-normal">DevOps/Integration Engineer</span> at <span class="text-accent">Sabre</span></div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-[130px_1fr] gap-x-6 gap-y-0.5">
+            <div class="text-stone-400 font-mono text-xs pt-0.5 tabular-nums">2012 – 2016</div>
+            <div class="text-stone-800"><span class="italic font-normal">Systems Engineer</span> at <span class="text-accent">Akamai Technologies</span></div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-[130px_1fr] gap-x-6 gap-y-0.5">
+            <div class="text-stone-400 font-mono text-xs pt-0.5 tabular-nums">2011 – 2012</div>
+            <div class="text-stone-800"><span class="italic font-normal">Senior Perl Developer</span> at <span class="text-accent">Hurra Communications</span></div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-[130px_1fr] gap-x-6 gap-y-0.5">
+            <div class="text-stone-400 font-mono text-xs pt-0.5 tabular-nums">2009 – 2011</div>
+            <div class="text-stone-800"><span class="italic font-normal">Perl Developer</span> at <span class="text-accent">Hurra Communications</span></div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-[130px_1fr] gap-x-6 gap-y-0.5">
+            <div class="text-stone-400 font-mono text-xs pt-0.5 tabular-nums">2007 – 2009</div>
+            <div class="text-stone-800"><span class="italic font-normal">IT Support</span> at <span class="text-accent">Hurra Communications</span></div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-[130px_1fr] gap-x-6 gap-y-0.5">
+            <div class="text-stone-400 font-mono text-xs pt-0.5 tabular-nums">2007</div>
+            <div class="text-stone-800"><span class="italic font-normal">IT Specialist/Deployment Specialist</span> at <span class="text-accent">Biuro-Technika</span></div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-[130px_1fr] gap-x-6 gap-y-0.5">
+            <div class="text-stone-400 font-mono text-xs pt-0.5 tabular-nums">2006</div>
+            <div class="text-stone-800"><span class="italic font-normal">IT Specialist/Deployment Specialist</span> at <span class="text-accent">ParaSoft</span></div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-[130px_1fr] gap-x-6 gap-y-0.5">
+            <div class="text-stone-400 font-mono text-xs pt-0.5 tabular-nums">2003 – 2006</div>
+            <div class="text-stone-800"><span class="italic font-normal">IT Specialist and Network Administrator</span> at <span class="text-accent">Polmozbyt Kraków S.A.</span></div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-[130px_1fr] gap-x-6 gap-y-0.5">
+            <div class="text-stone-400 font-mono text-xs pt-0.5 tabular-nums">2003</div>
+            <div class="text-stone-800 leading-snug">Involvement in the Iceguard group</div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-[130px_1fr] gap-x-6 gap-y-0.5">
+            <div class="text-stone-400 font-mono text-xs pt-0.5 tabular-nums">2002 – 2003</div>
+            <div class="text-stone-800 leading-snug">Participation in the LMS open-source project, an integrated network management system for internet providers of various sizes</div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-[130px_1fr] gap-x-6 gap-y-0.5">
+            <div class="text-stone-400 font-mono text-xs pt-0.5 tabular-nums">2002</div>
+            <div class="text-stone-800 leading-snug">Design and construction of the network in the Cracow Office of the Institute for Land Reclamation and Grassland Farming</div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-[130px_1fr] gap-x-6 gap-y-0.5">
+            <div class="text-stone-400 font-mono text-xs pt-0.5 tabular-nums">2001 – 2002</div>
+            <div class="text-stone-800 leading-snug">Computer Repairer and Network Administrator at &ldquo;Klik&rdquo; Computer Center</div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-[130px_1fr] gap-x-6 gap-y-0.5">
+            <div class="text-stone-400 font-mono text-xs pt-0.5 tabular-nums">2001</div>
+            <div class="text-stone-800 leading-snug">First place in &ldquo;Technik 2001&rdquo;, a technician diploma competition organised by the Polish Federation of Engineering Associations (NOT); thesis: &ldquo;Building dumping site – educational computer game&rdquo;</div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-[130px_1fr] gap-x-6 gap-y-0.5">
+            <div class="text-stone-400 font-mono text-xs pt-0.5 tabular-nums">1999 – 2002</div>
+            <div class="text-stone-800 leading-snug">Participation in the Denise MYTH project, an advanced natural language processing and decision-making system</div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-[130px_1fr] gap-x-6 gap-y-0.5">
+            <div class="text-stone-400 font-mono text-xs pt-0.5 tabular-nums">1999</div>
+            <div class="text-stone-800 leading-snug">Vocational practice at The Oil and Gas Institute</div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-[130px_1fr] gap-x-6 gap-y-0.5">
+            <div class="text-stone-400 font-mono text-xs pt-0.5 tabular-nums">1998</div>
+            <div class="text-stone-800 leading-snug">Vocational practice at the AGH Mass Spectrometry Laboratory</div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-[130px_1fr] gap-x-6 gap-y-0.5">
+            <div class="text-stone-400 font-mono text-xs pt-0.5 tabular-nums">1997</div>
+            <div class="text-stone-800 leading-snug">Started &ldquo;REDnet&rdquo;, a community computer network; managed it until 2003, when it merged into spine.pl (now citypartner.pl)</div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-[130px_1fr] gap-x-6 gap-y-0.5">
+            <div class="text-stone-400 font-mono text-xs pt-0.5 tabular-nums">1992</div>
+            <div class="text-stone-800 leading-snug">First contact with a computer</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section: Education -->
+      <section class="space-y-6 pt-6 border-t border-stone-200 page-break-inside-avoid">
+        <h2 class="text-xs font-semibold tracking-widest uppercase text-stone-400">Education</h2>
+
+        <div class="space-y-3.5 text-sm">
+          <div class="grid grid-cols-1 sm:grid-cols-[130px_1fr] gap-x-6 gap-y-0.5">
+            <div class="text-stone-400 font-mono text-xs pt-0.5 tabular-nums">2001</div>
+            <div class="text-stone-800">Upper-Secondary School of Computer Technologies</div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-[130px_1fr] gap-x-6 gap-y-0.5">
+            <div class="text-stone-400 font-mono text-xs pt-0.5 tabular-nums">1995 – 2001</div>
+            <div class="text-stone-800 leading-snug">Technical College of Environmental Care, Chemistry School Complex no. 1 in Cracow &mdash; technician diploma; first place in &ldquo;Technik 2001&rdquo;</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section: Additional Experience -->
+      <section class="space-y-6 pt-6 border-t border-stone-200 page-break-inside-avoid">
+        <h2 class="text-xs font-semibold tracking-widest uppercase text-stone-400">Additional Experience</h2>
+
+        <ul class="space-y-2.5 text-sm text-stone-800 list-disc list-outside pl-4 marker:text-stone-400">
+          <li>Linux as main OS since 1995; active server/network/router administration 1998–2005</li>
+          <li>&ldquo;QoS in Linux 2.2&rdquo; article in Linux+ magazine</li>
+          <li>Long-term work with Linux, network security, data flow and TCP/IP networks</li>
+          <li>Designed and deployed Linux server technologies at Polmozbyt Kraków S.A.</li>
+          <li>Designed and deployed custom MySQL sharding and vertical partitioning at Hurra Communications (100M+ rows, ~600 GB)</li>
+          <li>Designed migration of several Subversion repositories into one Git repository</li>
+          <li>Designed a distributed data fetching system using gearmand</li>
+        </ul>
+      </section>
+
+      <!-- Section: Knowledge -->
+      <section class="space-y-6 pt-6 border-t border-stone-200 page-break-inside-avoid">
+        <h2 class="text-xs font-semibold tracking-widest uppercase text-stone-400">Knowledge</h2>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-2.5 text-sm text-stone-800">
+          <ul class="space-y-2.5 list-disc list-outside pl-4 marker:text-stone-400">
+            <li>Docker, Kubernetes and OpenShift &mdash; <span class="text-stone-500">superb</span></li>
+            <li>Jenkins &mdash; <span class="text-stone-500">superb</span></li>
+            <li>Python (Flask) &mdash; <span class="text-stone-500">superb</span></li>
+            <li>Linux, especially Gentoo and Arch Linux &mdash; <span class="text-stone-500">superb</span></li>
+            <li>Shell scripting: bash, sed, awk &mdash; <span class="text-stone-500">superb</span></li>
+          </ul>
+          <ul class="space-y-2.5 list-disc list-outside pl-4 marker:text-stone-400">
+            <li>Linux firewalling and traffic shaping (iptables, QoS) &mdash; <span class="text-stone-500">good</span></li>
+            <li>macOS &mdash; <span class="text-stone-500">good</span></li>
+            <li>MySQL (clustering, partitioning, performance) &mdash; <span class="text-stone-500">good</span></li>
+            <li>Perl (CPAN, Modern Perl, Moose, Plack/PSGI) &mdash; <span class="text-stone-500">good</span></li>
+            <li>SQL &mdash; <span class="text-stone-500">good</span></li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- Section: Language Skills -->
+      <section class="space-y-4 pt-6 border-t border-stone-200 page-break-inside-avoid">
+        <h2 class="text-xs font-semibold tracking-widest uppercase text-stone-400">Language Skills</h2>
+        <p class="text-sm text-stone-800">English &mdash; <span class="text-stone-500">good</span></p>
+      </section>
+
+      <!-- Section: Hobbies and Interests -->
+      <section class="space-y-4 pt-6 border-t border-stone-200 page-break-inside-avoid">
+        <h2 class="text-xs font-semibold tracking-widest uppercase text-stone-400">Hobbies and Interests</h2>
+        <p class="text-sm text-stone-700 leading-relaxed">
+          heavy OpenCode user, heavy Neovim user, networking (WAN, LAN), operating systems (especially Linux), embedded computers (Raspberry Pi, ODROID), home automation (ESP8266, ESP32), open source, woodworking
+        </p>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="w-full border-t border-stone-100 py-12 px-6 sm:px-10 mt-12">
+    <div class="max-w-[760px] mx-auto text-left font-mono text-xs text-stone-400">
+      $ whoami → jabbas · © 2026 Grzegorz Dzięgielewski
+    </div>
+  </footer>
+
+</body>
+</html>
