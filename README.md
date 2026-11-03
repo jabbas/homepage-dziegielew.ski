@@ -76,6 +76,12 @@ Wersję wylicza `mathieudutour/github-tag-action` z Conventional Commits:
   łamiącą oznacza wyłącznie stopka `BREAKING CHANGE:` w treści commita.
 - Tag nie ma prefiksu `v` (`0.1.0`, nie `v0.1.0`). Pierwsze wydanie to `0.1.0`,
   z pierwszego commitu `feat`.
+- **Pierwsze wydanie może wymagać ręcznego tagu.** W repozytorium bez żadnego
+  tagu `github-tag-action` v6 porównuje `HEAD...GITHUB_SHA` i najpewniej nie
+  znajdzie commitów, więc pierwszy push do `main` może nie utworzyć wydania.
+  Sprawdź job `version` pierwszego przebiegu; jeśli nie powstał tag, wypchnij
+  ręcznie `git tag 0.1.0 && git push origin 0.1.0` (ręczny tag też wydaje).
+  Kolejne wydania liczą się już od tego tagu.
 
 ## Wydania
 
@@ -87,7 +93,8 @@ Wszystko dzieje się w jednym przebiegu `ci.yml` (tag utworzony przez
   wersję, powstaje tag, GitHub Release (paczka `homepage-X.Y.Z.tgz` i `SHA256SUMS`)
   oraz wpis w indeksie `jabbas/helm-charts`.
 - **Ręcznie:** wypchnięcie tagu semver (`X.Y.Z`) uruchamia testy i wydanie dla
-  tego tagu. Tak wydaje się `1.0.0` i wydania awaryjne.
+  tego tagu. Tak wydaje się `0.1.0`, gdy automat go nie utworzył, `1.0.0` i
+  wydania awaryjne.
 - **Wersja 1.0.0 i każdy kolejny major** wymaga zmiany zakresu wersji w
   HelmRelease, zanim Flux ją wdroży. Przed 1.0.0 `next-version.sh` zamienia zmianę
   łamiącą na minor; po 1.0.0 zmiana łamiąca daje następny major (semver.org).

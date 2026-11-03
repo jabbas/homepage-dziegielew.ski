@@ -471,6 +471,7 @@ UWAGA: repozytorium jest publiczne. Testy NIE mogą zawierać danych prywatnych 
 - Ręczny tag semver to dozwolony sposób wydania, np. dla 1.0.0 albo wydania awaryjnego.
 - Wersja 1.0.0 i każdy kolejny major wymaga zmiany zakresu wersji w HelmRelease.
 - Pierwsze wydanie: 0.1.0, z pierwszego commitu `feat`.
+  - Zastrzeżenie (z przeglądu końcowego): przy repozytorium bez żadnego tagu `github-tag-action` v6 porównuje `HEAD...GITHUB_SHA` i najpewniej nie znajdzie commitów — pierwszy przebieg może skończyć się bez wydania. Wtedy właściciel wypycha ręcznie tag `0.1.0` (wydanie ręczne działa tak samo). Kolejne wydania liczą się już od tego tagu.
 
 ## 9. Renovate (`renovate.json`)
 
