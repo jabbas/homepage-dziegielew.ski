@@ -82,7 +82,7 @@ jobs:
     outputs:
       version: ${{ steps.next.outputs.version }}
     steps:
-      # Tylko liczy (dry_run) — tag powstaje w ostatnim kroku, po ewentualnym
+      # Tylko liczy (dry_run) — tag powstaje w ostatnim kroku, po ewentualnej
       # zamianie `major` na minor (przed 1.0.0). Wyjścia: new_version,
       # previous_version, release_type. Pusty new_version = żaden commit nie wydaje.
       - name: Oblicz następną wersję
@@ -272,10 +272,10 @@ jobs:
           path: helm-charts
           token: ${{ secrets.HELM_CHARTS_TOKEN }}
           persist-credentials: false
-      # Dodaje wpis (jedyny wpis zbudowany przez helma dla paczki jest wstawiany
-      # do istniejącego dokumentu, reszta zostaje nietknięta), commituje i
-      # wypycha. Przegrany wyścig pushy jest ponawiany od nowego stanu zdalnego;
-      # wersja już wpisana z inną sumą kończy się błędem; z tą samą — nic nie robi.
+      # publish_index dopisuje jeden wpis do istniejącego indeksu i nie zmienia
+      # reszty dokumentu, po czym commituje i wypycha. Przegrany wyścig pushy
+      # jest ponawiany od nowego stanu zdalnego. Wersja już wpisana z inną sumą
+      # kończy się błędem, a z tą samą sumą — nic nie robi.
       - name: Zaktualizuj indeks
         env:
           SHA256: ${{ steps.package.outputs.sha256 }}
@@ -284,10 +284,10 @@ jobs:
           source .github/scripts/helm-index.sh
           publish_index helm-charts "chart/$CHART_NAME-$VERSION.tgz" "$VERSION" "$SHA256" \
             "https://github.com/$GITHUB_REPOSITORY/releases/download/$VERSION"
-      # Pages buduje się po pushu. Powolne zbudowanie (wersji jeszcze nie ma na
-      # liście) jest zgłaszane, a nie kończy joba błędem: indeks jest wypchnięty,
-      # a ponowienie joba poczeka jeszcze raz. INNA suma dla tej wersji kończy
-      # job błędem.
+      # Pages buduje się po pushu; wolne budowanie (wersji jeszcze nie ma na
+      # liście) zgłaszamy ostrzeżeniem i nie kończymy joba błędem: indeks jest już
+      # wypchnięty, a ponowienie joba poczeka jeszcze raz. Inna suma dla tej
+      # wersji kończy job błędem.
       - name: Poczekaj, aż indeks będzie serwowany
         env:
           SHA256: ${{ steps.package.outputs.sha256 }}

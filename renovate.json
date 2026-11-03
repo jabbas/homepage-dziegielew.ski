@@ -26,7 +26,8 @@
   "packageRules": [
     {
       "description": "Obraz nginx: poprawki bezpieczeństwa muszą wydać nową wersję chartu, więc fix(deps), nie chore(deps)",
-      "matchPackageNames": ["nginxinc/nginx-unprivileged"],
+      "matchPackageNames": ["docker.io/nginxinc/nginx-unprivileged"],
+      "allowedVersions": "/^\\d+\\.\\d*[02468]\\.\\d+-alpine$/",
       "pinDigests": true,
       "semanticCommitType": "fix",
       "semanticCommitScope": "deps"
