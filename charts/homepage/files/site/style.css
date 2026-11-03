@@ -60,12 +60,15 @@ body {
   line-height: 1.625;
 }
 
+/* Linki bez podkreślenia (jak na makietach); podkreślenie na :hover i :focus-visible. */
 a {
   color: var(--color-accent);
+  text-decoration: none;
 }
 
-a:hover {
-  text-decoration-thickness: 2px;
+a:hover,
+a:focus-visible {
+  text-decoration: underline;
 }
 
 a:focus-visible {
@@ -79,17 +82,25 @@ img {
   max-width: 100%;
 }
 
-/* Jedna wyśrodkowana kolumna; stopka zawsze przy dolnej krawędzi okna. */
-.page {
+/*
+ * Układ: nagłówek, treść i stopka to osobne pasy na całą szerokość okna,
+ * a w środku wyśrodkowana kolumna (.container). Dzięki temu nagłówek CV może
+ * mieć linię na całą szerokość. Stopka zawsze przy dolnej krawędzi okna.
+ */
+body {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
+}
+
+.container {
+  width: 100%;
   max-width: 42rem;
   margin: 0 auto;
   padding: 0 24px;
 }
 
-.page--cv {
+.container--wide {
   max-width: 47.5rem;
 }
 
@@ -100,17 +111,19 @@ main {
 /* ---------- Nagłówek i stopka serwisu ---------- */
 
 .site-header {
+  padding: 40px 0;
+  font-size: 0.875rem;
+}
+
+.site-header .container {
   display: flex;
   align-items: baseline;
   justify-content: space-between;
-  padding: 40px 0;
-  font-size: 0.875rem;
 }
 
 .wordmark {
   color: var(--color-text);
   font-weight: 600;
-  text-decoration: none;
 }
 
 .site-header nav {
@@ -120,25 +133,32 @@ main {
 
 .site-header nav a {
   color: var(--color-text-muted);
-  text-decoration: none;
 }
 
-.site-header nav a:hover {
+.site-header nav a:hover,
+.site-header nav a:focus-visible {
   color: var(--color-accent);
-  text-decoration: underline;
 }
 
+/* Bieżąca strona: pogrubiona, ciemna. */
 .site-header nav a[aria-current="page"] {
   color: var(--color-text);
   font-weight: 600;
+}
+
+/* Strona CV: linia pod nagłówkiem na całą szerokość i podkreślona bieżąca pozycja. */
+.site-header--ruled {
+  padding: 24px 0 20px;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.site-header--ruled nav a[aria-current="page"] {
   text-decoration: underline;
   text-underline-offset: 6px;
 }
 
 .site-footer {
   margin-top: 64px;
-  padding: 24px 0 40px;
-  border-top: 1px solid var(--color-border);
   color: var(--color-text-subtle);
   font-family: var(--font-mono);
   font-size: 0.75rem;
@@ -146,6 +166,8 @@ main {
 
 .site-footer p {
   margin: 0;
+  padding: 24px 0 40px;
+  border-top: 1px solid var(--color-border);
 }
 
 /* ---------- Wizytówka ---------- */
@@ -164,8 +186,9 @@ main {
   border: 1px solid var(--color-border);
   border-radius: 50%;
   object-fit: cover;
-  /* Zdjęcie jest pionowe, twarz w górnej połowie kadru. */
-  object-position: 50% 30%;
+  /* Zdjęcie jest pionowe (601×943), głowa w górnej połowie kadru: przesuwamy
+     kadr ku górze, żeby czubek głowy nie wypadał poza okrąg. */
+  object-position: 50% 25%;
 }
 
 h1 {
@@ -233,14 +256,13 @@ h1 {
 .link-list a {
   color: var(--color-text);
   font-weight: 500;
-  text-decoration: none;
   overflow-wrap: anywhere;
   text-align: right;
 }
 
-.link-list a:hover {
+.link-list a:hover,
+.link-list a:focus-visible {
   color: var(--color-accent);
-  text-decoration: underline;
 }
 
 .button {
@@ -251,11 +273,12 @@ h1 {
   border-radius: 4px;
   color: var(--color-accent);
   font-weight: 500;
-  text-decoration: none;
 }
 
-.button:hover {
+.button:hover,
+.button:focus-visible {
   background: var(--color-accent-hover-background);
+  text-decoration: none;
 }
 
 /* ---------- Strona 404 ---------- */
@@ -271,7 +294,7 @@ h1 {
 
 /* ---------- CV ---------- */
 
-.page--cv main {
+.cv main {
   font-size: 0.9375rem;
   line-height: 1.6;
 }
@@ -281,7 +304,7 @@ h1 {
   align-items: flex-start;
   justify-content: space-between;
   gap: 24px;
-  padding-bottom: 32px;
+  padding: 40px 0 32px;
   border-bottom: 1px solid var(--color-border);
 }
 
@@ -297,10 +320,17 @@ h1 {
 .contact-list {
   display: flex;
   flex-wrap: wrap;
-  gap: 4px 20px;
+  gap: 4px 12px;
   margin: 16px 0 0;
   padding: 0;
   list-style: none;
+}
+
+/* Kropka rozdzielająca e-mail, GitHub i LinkedIn (jak na makiecie). */
+.contact-list li + li::before {
+  content: "·";
+  margin-right: 12px;
+  color: var(--color-text-subtle);
 }
 
 .cv-section {
@@ -323,6 +353,10 @@ h1 {
 }
 
 /* Oś czasu: lata po lewej, opis po prawej. */
+.cv-section p {
+  margin: 0;
+}
+
 .timeline {
   display: grid;
   grid-template-columns: 130px 1fr;
@@ -337,6 +371,7 @@ h1 {
   font-family: var(--font-mono);
   font-size: 0.75rem;
   font-variant-numeric: tabular-nums;
+  white-space: nowrap;
 }
 
 .timeline dd {
@@ -362,7 +397,7 @@ h1 {
 }
 
 @media (min-width: 48rem) {
-  .page--cv {
+  .container--wide {
     padding: 0 40px;
   }
 
@@ -379,8 +414,9 @@ h1 {
     font-size: 1rem;
   }
 
-  .site-header {
-    padding: 24px 0;
+  .site-header,
+  .site-header--ruled {
+    padding: 20px 0;
   }
 
   .intro {
@@ -414,6 +450,10 @@ h1 {
     display: block;
     padding: 12px 16px;
     text-align: center;
+  }
+
+  .cv-header {
+    padding-top: 28px;
   }
 
   .cv-header .photo {
@@ -454,6 +494,7 @@ h1 {
   }
 
   body {
+    min-height: 0;
     font-size: 11pt;
     line-height: 1.45;
   }
@@ -463,14 +504,13 @@ h1 {
     display: none;
   }
 
-  .page,
-  .page--cv {
-    min-height: 0;
+  .container,
+  .container--wide {
     max-width: none;
     padding: 0;
   }
 
-  .page--cv main {
+  .cv main {
     font-size: 11pt;
   }
 
@@ -488,6 +528,10 @@ h1 {
     overflow-wrap: anywhere;
   }
 
+  .cv-header {
+    padding-top: 0;
+  }
+
   .cv-header .photo {
     width: 90px;
     height: 90px;
@@ -495,29 +539,30 @@ h1 {
 
   .cv-section {
     margin-top: 20pt;
-    break-inside: avoid;
   }
 
   .cv-section + .cv-section {
     padding-top: 12pt;
   }
 
-  /* Długa lista doświadczenia może się łamać między wierszami. */
-  .cv-section--experience {
-    break-inside: auto;
-  }
-
-  .timeline {
-    grid-template-columns: 100px 1fr;
-    row-gap: 6pt;
+  /* Sekcje mogą się łamać między stronami (bez pustych połówek stron);
+     nie łamiemy tylko wewnątrz pojedynczego wpisu, a nagłówek sekcji
+     nie zostaje sam na dole strony. */
+  .cv-section h2 {
+    margin-bottom: 10pt;
+    break-after: avoid;
   }
 
   .timeline dt,
-  .timeline dd {
+  .timeline dd,
+  .bullets li,
+  .cv-section p {
     break-inside: avoid;
   }
 
-  .cv-section h2 {
-    margin-bottom: 10pt;
+  /* Kolumna dat mieści "2024 – current" w jednej linii. */
+  .timeline {
+    grid-template-columns: 8rem 1fr;
+    row-gap: 6pt;
   }
 }
