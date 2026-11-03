@@ -1,0 +1,47 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": ["config:recommended"],
+  "semanticCommits": "enabled",
+  "automerge": false,
+  "enabledManagers": ["github-actions", "custom.regex"],
+  "customManagers": [
+    {
+      "description": "Obraz nginx w values.yaml: tag i osobne pole digest. Menedżer helm-values czyta tylko tag, a przypinając skrót dopisałby go do tagu (tag@sha256:…) i zostawił stare pole digest, więc obraz czytamy wyrażeniem regularnym",
+      "customType": "regex",
+      "managerFilePatterns": ["/^charts/homepage/values\\.yaml$/"],
+      "datasourceTemplate": "docker",
+      "matchStrings": [
+        "repository: (?<depName>\\S+)\\n\\s+tag: \"(?<currentValue>[^\"]+)\"\\n(?:\\s*#[^\\n]*\\n)*\\s+digest: \"(?<currentDigest>sha256:[0-9a-f]{64})\""
+      ]
+    },
+    {
+      "description": "Narzędzia pobierane przez .github/scripts/install-tools.sh (komentarz `# renovate:` nad zmienną wersji)",
+      "customType": "regex",
+      "managerFilePatterns": ["/^\\.github/scripts/install-tools\\.sh$/"],
+      "matchStrings": [
+        "# renovate: datasource=(?<datasource>\\S+) depName=(?<depName>\\S+)\\n[A-Z_]+_VERSION=(?<currentValue>\\S+)"
+      ]
+    }
+  ],
+  "packageRules": [
+    {
+      "description": "Obraz nginx: poprawki bezpieczeństwa muszą wydać nową wersję chartu, więc fix(deps), nie chore(deps)",
+      "matchPackageNames": ["nginxinc/nginx-unprivileged"],
+      "pinDigests": true,
+      "semanticCommitType": "fix",
+      "semanticCommitScope": "deps"
+    },
+    {
+      "description": "Akcje GitHuba nie wydają nowej wersji strony: ci(deps)",
+      "matchManagers": ["github-actions"],
+      "semanticCommitType": "ci",
+      "semanticCommitScope": "deps"
+    },
+    {
+      "description": "Narzędzia z install-tools.sh nie wydają nowej wersji strony: ci(deps)",
+      "matchFileNames": [".github/scripts/install-tools.sh"],
+      "semanticCommitType": "ci",
+      "semanticCommitScope": "deps"
+    }
+  ]
+}

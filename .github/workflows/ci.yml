@@ -1,0 +1,310 @@
+# SPDX-License-Identifier: Apache-2.0
+#
+# Jeden workflow: testy → wersja → wydanie → indeks Helma (spec 8).
+#
+# Dlaczego wszystko w jednym przebiegu: tag utworzony przez GITHUB_TOKEN NIE
+# uruchamia kolejnego workflow (zabezpieczenie GitHuba przed pętlami), więc job
+# `version` nie może po prostu "wypchnąć tagu i poczekać na wydanie" — `release`
+# i `helm-index` muszą być w tym samym przebiegu, po `version`.
+#
+# Konwencja commitów (preset angular akcji github-tag-action):
+#   feat → minor; fix, perf, refactor → patch; docs, chore, ci, test, style,
+#   build → bez wydania. Zmiana łamiąca przed 1.0.0 → minor (next-version.sh).
+#   Uwaga: preset angular NIE rozpoznaje `feat!:` — zmianę łamiącą oznacza
+#   wyłącznie stopka `BREAKING CHANGE:` w treści commita.
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+    # Ręczny tag semver to dozwolony sposób wydania (np. 1.0.0, wydanie awaryjne).
+    tags: ["[0-9]+.[0-9]+.[0-9]+"]
+
+# Uprawnienia minimalne; joby, które potrzebują więcej, podnoszą je u siebie.
+permissions:
+  contents: read
+
+env:
+  CHART_NAME: homepage
+  HELM_REPO_URL: https://jabbas.github.io/helm-charts
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  test:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: azure/setup-helm@9bc31f4ebc9c6b171d7bfbaa5d006ae7abdb4310 # v5.0.1
+        with:
+          version: v3.22.1
+      # Przypięte binaria z sumami SHA-256 (yq do testów chartu i indeksu,
+      # kubeconform do walidacji manifestów, actionlint do tego workflow).
+      - name: Zainstaluj narzędzia
+        run: bash .github/scripts/install-tools.sh yq kubeconform actionlint
+      - name: Test renderowania chartu
+        run: bash tests/render-test.sh
+      - name: Test treści strony
+        run: bash tests/content-test.sh
+      # Konfiguracja nginx to najbardziej ryzykowny kod, a każdy push na main
+      # to publiczne wydanie — dlatego prawdziwy kontener na runnerze.
+      - name: Test nginx w kontenerze
+        run: bash tests/nginx-smoke-test.sh
+      - name: shellcheck
+        run: shellcheck .github/scripts/*.sh tests/*.sh
+      - name: actionlint
+        run: actionlint
+      - name: Test wyliczania wersji
+        run: bash .github/scripts/next-version-test.sh
+      - name: Test skryptów indeksu Helma
+        run: bash .github/scripts/helm-index-test.sh
+
+  # Liczy następną wersję i tworzy tag. Tylko push na main, po testach.
+  version:
+    needs: test
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    # Dwa szybkie pushe na main nie mogą policzyć tej samej wersji równolegle:
+    # drugi czeka, aż pierwszy wypchnie tag, i liczy już od niego.
+    concurrency:
+      group: release
+      cancel-in-progress: false
+    outputs:
+      version: ${{ steps.next.outputs.version }}
+    steps:
+      # Tylko liczy (dry_run) — tag powstaje w ostatnim kroku, po ewentualnym
+      # zamianie `major` na minor (przed 1.0.0). Wyjścia: new_version,
+      # previous_version, release_type. Pusty new_version = żaden commit nie wydaje.
+      - name: Oblicz następną wersję
+        id: calculate
+        uses: mathieudutour/github-tag-action@a22cf08638b34d5badda920f9daf6e72c477b07b # v6.2
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          tag_prefix: ""
+          default_bump: "false"
+          release_branches: main
+          custom_release_rules: refactor:patch
+          # Domyślnie akcja bierze tylko pierwszą stronę tagów (100) — przy
+          # większej liczbie poprzednia wersja mogłaby wyjść zła.
+          fetch_all_tags: "true"
+          dry_run: "true"
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      # Wejście wyłącznie przez env, żeby skrypt dało się uruchomić lokalnie.
+      - name: Ustal wersję (major → minor przed 1.0.0)
+        id: next
+        env:
+          RELEASE_TYPE: ${{ steps.calculate.outputs.release_type }}
+          PREVIOUS: ${{ steps.calculate.outputs.previous_version }}
+          NEW: ${{ steps.calculate.outputs.new_version }}
+        run: bash .github/scripts/next-version.sh >> "$GITHUB_OUTPUT"
+      # custom_tag omija liczenie; create_annotated_tag domyślnie "false" →
+      # tag lekki na GITHUB_SHA (API createRef).
+      - name: Utwórz tag
+        if: steps.next.outputs.version != ''
+        uses: mathieudutour/github-tag-action@a22cf08638b34d5badda920f9daf6e72c477b07b # v6.2
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          tag_prefix: ""
+          release_branches: main
+          fetch_all_tags: "true"
+          custom_tag: ${{ steps.next.outputs.version }}
+
+  # Pakuje chart i tworzy GitHub Release. Uruchamia się po `version`, gdy ten
+  # utworzył tag, ALBO po ręcznym pushu tagu semver.
+  #
+  # `!cancelled()`: ręczny push tagu pomija job `version` (skipped), a domyślne
+  # success() w `if` pominęłoby wtedy też `release`. Warunek wprost wymaga
+  # sukcesu `test`, a `version` — tylko gdy faktycznie coś wydał.
+  release:
+    needs: [test, version]
+    if: >-
+      ${{ !cancelled() && needs.test.result == 'success'
+        && (github.ref_type == 'tag'
+          || (needs.version.result == 'success' && needs.version.outputs.version != '')) }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+    steps:
+      # Wersja z joba `version` albo nazwa ręcznie wypchniętego tagu. Musi być
+      # czystym semverem — z niej powstaje nazwa paczki i tag Release.
+      - name: Ustal wersję wydania
+        id: version
+        env:
+          AUTOMATIC_VERSION: ${{ needs.version.outputs.version }}
+          TAG_NAME: ${{ github.ref_name }}
+          REF_TYPE: ${{ github.ref_type }}
+        run: |
+          if [[ "$REF_TYPE" == tag ]]; then
+            version="$TAG_NAME"
+          else
+            version="$AUTOMATIC_VERSION"
+          fi
+          if [[ ! "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            printf '::error::wersja %q nie jest w postaci X.Y.Z\n' "$version"
+            exit 1
+          fi
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+      # Tag już istnieje (utworzył go job `version` albo człowiek) — pakujemy
+      # dokładnie ten commit.
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: refs/tags/${{ steps.version.outputs.version }}
+          persist-credentials: false
+      - uses: azure/setup-helm@9bc31f4ebc9c6b171d7bfbaa5d006ae7abdb4310 # v5.0.1
+        with:
+          version: v3.22.1
+      # Chart.yaml ma zaślepki 0.0.0; prawdziwa wersja wchodzi tylko tutaj.
+      - name: Spakuj chart
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+        run: helm package "charts/$CHART_NAME" --version "$VERSION" --app-version "$VERSION" --destination dist
+      # Pakowanie bez --version dałoby homepage-0.0.0.tgz, które trafiłoby do
+      # Release i do indeksu. W dist/ ma być dokładnie jeden plik o właściwej nazwie.
+      - name: Sprawdź nazwę paczki
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          shopt -s nullglob
+          files=(dist/*)
+          expected="dist/$CHART_NAME-$VERSION.tgz"
+          if [[ "${#files[@]}" -ne 1 || "${files[0]}" != "$expected" ]]; then
+            printf '::error::w dist/ jest %q, oczekiwano wyłącznie %s\n' "${files[*]}" "$expected"
+            exit 1
+          fi
+      - name: Policz sumy SHA-256
+        working-directory: dist
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+        run: sha256sum "$CHART_NAME-$VERSION.tgz" > SHA256SUMS
+      - name: Utwórz GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ steps.version.outputs.version }}
+        run: gh release create "$VERSION" dist/* --verify-tag --generate-notes --title "$VERSION"
+
+  # Dopisuje wpis do wspólnego indeksu jabbas/helm-charts (GitHub Pages).
+  # `!cancelled()` jak wyżej; wymagamy wprost sukcesu `release`. Job jest
+  # idempotentny — po dodaniu brakującego sekretu można go ponowić samodzielnie.
+  #
+  # Zaufanie: Helm i Flux nie weryfikują podpisów repozytoriów HTTP. Paczka jest
+  # powiązana z indeksem tylko sumą SHA-256 (Release → SHA256SUMS → indeks);
+  # podpis chartu to świadomy dług (spec 13).
+  helm-index:
+    needs: release
+    if: ${{ !cancelled() && needs.release.result == 'success' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    environment: helm-charts
+    permissions:
+      contents: read
+    env:
+      VERSION: ${{ needs.release.outputs.version }}
+    steps:
+      - name: Sprawdź, że sekret jest dostępny
+        env:
+          HELM_CHARTS_TOKEN: ${{ secrets.HELM_CHARTS_TOKEN }}
+        run: |
+          if [[ -z "$HELM_CHARTS_TOKEN" ]]; then
+            echo "::error::brak sekretu HELM_CHARTS_TOKEN w środowisku 'helm-charts'; zob. README (Wydania). Dodaj go i uruchom ten job ponownie."
+            exit 1
+          fi
+      # Najpierw to repozytorium (skrypty z otagowanego commita). Checkout
+      # jabbas/helm-charts musi być po nim, bo checkout czyści katalog roboczy.
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: refs/tags/${{ needs.release.outputs.version }}
+          persist-credentials: false
+      - uses: azure/setup-helm@9bc31f4ebc9c6b171d7bfbaa5d006ae7abdb4310 # v5.0.1
+        with:
+          version: v3.22.1
+      # yq parsuje i przepisuje wspólny indeks, więc jest przypięty (z sumą).
+      - name: Zainstaluj yq
+        run: bash .github/scripts/install-tools.sh yq
+      # Paczką jest sam załącznik Release (plik, na który wskaże indeks), a nie
+      # artefakt przebiegu: artefakty wygasają, a ponowienie joba ma działać.
+      # Sprawdzamy ją, zanim token helm-charts trafi gdziekolwiek.
+      - name: Sprawdź paczkę względem SHA256SUMS
+        id: package
+        run: |
+          file="$CHART_NAME-$VERSION.tgz"
+          package="chart/$file"
+          release_url="https://github.com/$GITHUB_REPOSITORY/releases/download/$VERSION"
+
+          # 1. Załącznik, na który wskaże indeks: HTTP 200 po przekierowaniach.
+          mkdir chart
+          status="$(curl -sSL --retry 3 -o "$package" -w '%{http_code}' "$release_url/$file")"
+          if [[ "$status" != 200 ]]; then
+            echo "::error::$release_url/$file odpowiedział HTTP $status, oczekiwano 200"
+            exit 1
+          fi
+          sha="$(sha256sum "$package" | cut -d' ' -f1)"
+          echo "sha256 załącznika: $sha"
+
+          # 2. SHA256SUMS tego samego wydania.
+          curl -fsSL --retry 3 -o SHA256SUMS "$release_url/SHA256SUMS"
+          listed="$(awk -v f="$file" '$2 == f {print $1}' SHA256SUMS)"
+          if [[ "$listed" != "$sha" ]]; then
+            # %q: SHA256SUMS to pobrany plik.
+            printf '::error::SHA256SUMS podaje %q dla %s, załącznik ma %s\n' "$listed" "$file" "$sha"
+            exit 1
+          fi
+          echo "sha256=$sha" >> "$GITHUB_OUTPUT"
+      # Token służy tylko do klonowania i nie jest zapisywany (push podaje go
+      # per polecenie, zob. publish_index w helm-index.sh).
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: jabbas/helm-charts
+          path: helm-charts
+          token: ${{ secrets.HELM_CHARTS_TOKEN }}
+          persist-credentials: false
+      # Dodaje wpis (jedyny wpis zbudowany przez helma dla paczki jest wstawiany
+      # do istniejącego dokumentu, reszta zostaje nietknięta), commituje i
+      # wypycha. Przegrany wyścig pushy jest ponawiany od nowego stanu zdalnego;
+      # wersja już wpisana z inną sumą kończy się błędem; z tą samą — nic nie robi.
+      - name: Zaktualizuj indeks
+        env:
+          SHA256: ${{ steps.package.outputs.sha256 }}
+          HELM_CHARTS_TOKEN: ${{ secrets.HELM_CHARTS_TOKEN }}
+        run: |
+          source .github/scripts/helm-index.sh
+          publish_index helm-charts "chart/$CHART_NAME-$VERSION.tgz" "$VERSION" "$SHA256" \
+            "https://github.com/$GITHUB_REPOSITORY/releases/download/$VERSION"
+      # Pages buduje się po pushu. Powolne zbudowanie (wersji jeszcze nie ma na
+      # liście) jest zgłaszane, a nie kończy joba błędem: indeks jest wypchnięty,
+      # a ponowienie joba poczeka jeszcze raz. INNA suma dla tej wersji kończy
+      # job błędem.
+      - name: Poczekaj, aż indeks będzie serwowany
+        env:
+          SHA256: ${{ steps.package.outputs.sha256 }}
+        run: |
+          source .github/scripts/helm-index.sh
+          rc=0
+          wait_for_pages "$HELM_REPO_URL/index.yaml" "$VERSION" "$SHA256" || rc=$?
+          case "$rc" in
+            0)
+              echo "$VERSION jest serwowany pod $HELM_REPO_URL" >> "$GITHUB_STEP_SUMMARY"
+              ;;
+            1)
+              echo "::warning::$HELM_REPO_URL/index.yaml jeszcze nie zawiera $VERSION (indeks jest wypchnięty; budowa Pages jest wolna albo nie powiodła się). Sprawdź wdrożenie Pages w jabbas/helm-charts i ponów ten job."
+              echo "**$HELM_REPO_URL/index.yaml jeszcze nie zawiera $VERSION.** Indeks jest wypchnięty; sprawdź budowę Pages w jabbas/helm-charts." >> "$GITHUB_STEP_SUMMARY"
+              ;;
+            *)
+              echo "**$HELM_REPO_URL/index.yaml serwuje inną sumę dla $VERSION.**" >> "$GITHUB_STEP_SUMMARY"
+              exit 1
+              ;;
+          esac
