@@ -33,7 +33,9 @@ fail() {
 }
 
 # flat <plik>: zawartość pliku w jednej linii (znaczniki rozbite na wiele
-# linii nadal pasują do wyrażeń regularnych).
+# linii nadal pasują do wyrażeń regularnych). Wynik przekazujemy do grep
+# przez here-string, nie przez potok: `grep -q` kończy się po pierwszym
+# dopasowaniu, a przy `pipefail` SIGPIPE w `tr` (kod 141) odwróciłby wynik.
 flat() {
   tr '\n' ' ' <"$1"
 }
@@ -48,7 +50,7 @@ expect_absent() {
     if [[ ! -f "$file" ]]; then
       fail "$name ($file: brak pliku)"
       bad=1
-    elif flat "$file" | grep -Eqi -- "$pattern"; then
+    elif grep -Eqi -- "$pattern" <<<"$(flat "$file")"; then
       fail "$name ($file pasuje do: $pattern)"
       bad=1
     fi
@@ -68,7 +70,7 @@ expect_present() {
     if [[ ! -f "$file" ]]; then
       fail "$name ($file: brak pliku)"
       bad=1
-    elif ! flat "$file" | grep -Eq -- "$pattern"; then
+    elif ! grep -Eq -- "$pattern" <<<"$(flat "$file")"; then
       fail "$name ($file nie pasuje do: $pattern)"
       bad=1
     fi
@@ -83,7 +85,7 @@ expect_contains_text() {
   local name="$1" text="$2" file="$3"
   if [[ ! -f "$file" ]]; then
     fail "$name ($file: brak pliku)"
-  elif flat "$file" | grep -Fq -- "$text"; then
+  elif grep -Fq -- "$text" <<<"$(flat "$file")"; then
     pass "$name"
   else
     fail "$name ($file nie zawiera: $text)"
@@ -141,6 +143,15 @@ else
   fail "italic tags balanced ($site/cv.html: brak pliku)"
 fi
 
+# 4b. Lata w osi czasu: gdy początek == koniec, jeden rok ("2024", nie "2024 – 2024").
+expect_absent "single year not repeated" \
+  '<dt>([0-9]{4})[[:space:]]*[–—-][[:space:]]*\1</dt>' "$site/cv.html"
+
+# 4c. Martwe lub przekierowujące na obce strony firmy/projekty bez linku (decyzja
+# koordynatora): tylko nazwa jako zwykły tekst.
+expect_absent "dead links removed" \
+  'href="[^"]*(hurra\.com|parasoft-magnat\.pl|klik\.kr\.pl|denise\.pl)' "$site/cv.html"
+
 # 5. Język dokumentu.
 expect_present "lang" '<html lang="en">' "${html_files[@]}"
 
@@ -187,7 +198,7 @@ for heading in \
   'Knowledge' \
   'Language skills' \
   'Hobbies and interests'; do
-  expect_present "cv section: $heading" "<h2[^>]*>[[:space:]]*$heading[[:space:]]*</h2>" "$site/cv.html"
+  expect_present "cv section: $heading" "<h2[^>]*>[[:space:]]*${heading}[[:space:]]*</h2>" "$site/cv.html"
 done
 
 # 10. Strona 404: ten sam styl i link powrotny do strony głównej.
@@ -206,6 +217,14 @@ if [[ -f "$stylesheet" ]]; then
     pass "print light"
   else
     fail "print light (blok @media print nie ustawia białego tła i czarnego tekstu)"
+  fi
+
+  # Wydruk nie wymusza przerzucania całych sekcji na następną stronę (puste
+  # pół strony przed "Knowledge"); unikamy łamania tylko wewnątrz wpisów.
+  if grep -Eq -- '\.cv-section[[:space:]]*\{[^}]*break-inside' <<<"$(tr '\n' ' ' <<<"$block")"; then
+    fail "print sections may break (reguła .cv-section w @media print ustawia break-inside)"
+  else
+    pass "print sections may break"
   fi
 
   # Blok @media print musi leżeć PO bloku ciemnego motywu — przy równej
