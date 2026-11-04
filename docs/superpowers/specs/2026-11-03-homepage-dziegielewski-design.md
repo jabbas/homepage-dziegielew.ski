@@ -360,7 +360,7 @@ docs/superpowers/specs/
 
 ### 7.5. Zdjęcie
 
-- Kopia `/Users/jabbas/Projects/cv/photo.jpg` bez zmian.
+- ~~Kopia `/Users/jabbas/Projects/cv/photo.jpg` bez zmian.~~ Zmiana 2026-11-04 (decyzja właściciela): portret z CV był zbyt ciasno kadrowany (twarz na całą szerokość), więc żaden `object-position` nie mieścił całej głowy z brodą. `photo.jpg` to teraz awatar GitHuba właściciela (`https://avatars.githubusercontent.com/jabbas`, 460×460, przekonwertowany do JPEG), kadr `object-position: 50% 50%`.
 
 ### 7.6. Makiety
 
