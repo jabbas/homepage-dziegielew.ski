@@ -296,7 +296,7 @@ docs/superpowers/specs/
   - `resources`,
   - `ingress.className`,
   - `canonicalHost` (`dziegielew.ski`),
-  - `redirectHosts` (`[www.dziegielew.ski]`).
+  - `redirectHosts` (`[www.dziegielew.ski]`; od 2026-11-04 także jabbas.eu i www.jabbas.eu (decyzja właściciela)).
 - `values.schema.json` waliduje je ściśle (`additionalProperties: false`).
 - HelmRelease nie musi niczego nadpisywać.
 

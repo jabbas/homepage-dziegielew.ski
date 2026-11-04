@@ -164,11 +164,11 @@ expect_equal "service" '[80,8080,"ClusterIP"]' \
 expect_equal "pdb" "1" "$(query PodDisruptionBudget '.spec.minAvailable')"
 
 expect_equal "ingress class" "traefik-external" "$(query Ingress '.spec.ingressClassName')"
-expect_equal "ingress hosts" '["dziegielew.ski","www.dziegielew.ski"]' \
+expect_equal "ingress hosts" '["dziegielew.ski","www.dziegielew.ski","jabbas.eu","www.jabbas.eu"]' \
   "$(query_json Ingress '[.spec.rules[].host]')"
-expect_equal "ingress paths" '["/:Prefix","/:Prefix"]' \
+expect_equal "ingress paths" '["/:Prefix","/:Prefix","/:Prefix","/:Prefix"]' \
   "$(query_json Ingress '[.spec.rules[].http.paths[] | .path + ":" + .pathType]')"
-expect_equal "ingress backend" '["homepage:80","homepage:80"]' \
+expect_equal "ingress backend" '["homepage:80","homepage:80","homepage:80","homepage:80"]' \
   "$(query_json Ingress '[.spec.rules[].http.paths[] | .backend.service.name + ":" + (.backend.service.port.number | tostring)]')"
 expect_equal "ingress without tls" "false" "$(query Ingress '.spec | has("tls")')"
 

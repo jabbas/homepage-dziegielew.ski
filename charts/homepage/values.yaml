@@ -23,5 +23,9 @@ ingress:
 
 # Adres kanoniczny strony oraz hosty przekierowywane na niego (301).
 canonicalHost: dziegielew.ski
+# jabbas.eu to poprzednia domena właściciela: stare linki (np. jabbas.eu/cv)
+# trafiają teraz na nową stronę.
 redirectHosts:
   - www.dziegielew.ski
+  - jabbas.eu
+  - www.jabbas.eu

@@ -231,6 +231,14 @@ request "$redirect_host" "/x?y=1"
 expect_equal "www redirect status" 301 "$status"
 expect_equal "www redirect location" "https://$canonical_host/x?y=1" "$(header_values Location)"
 
+request jabbas.eu "/cv?x=1"
+expect_equal "jabbas.eu redirect status" 301 "$status"
+expect_equal "jabbas.eu redirect location" "https://$canonical_host/cv?x=1" "$(header_values Location)"
+
+request www.jabbas.eu /
+expect_equal "www.jabbas.eu redirect status" 301 "$status"
+expect_equal "www.jabbas.eu redirect location" "https://$canonical_host/" "$(header_values Location)"
+
 request 10.0.0.1 /healthz
 expect_equal "probe by IP" 200 "$status"
 
@@ -263,6 +271,8 @@ request "$canonical_host" /nie-ma
 check_security_headers "404 /nie-ma"
 request "$redirect_host" /
 check_security_headers "301 www /"
+request jabbas.eu /
+check_security_headers "301 jabbas.eu /"
 
 request "$canonical_host" /
 expect_equal "cache home" "max-age=3600" "$(header_values Cache-Control)"
