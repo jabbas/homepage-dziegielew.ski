@@ -186,9 +186,9 @@ main {
   border: 1px solid var(--color-border);
   border-radius: 50%;
   object-fit: cover;
-  /* Zdjęcie jest pionowe (601×943), głowa w górnej połowie kadru: przesuwamy
-     kadr ku górze, żeby czubek głowy nie wypadał poza okrąg. */
-  object-position: 50% 25%;
+  /* Zdjęcie jest pionowe (601×943): okno kadru ma 601 px wysokości i musi
+     objąć całą twarz od czoła po brodę, więc przesuwamy je w dół. */
+  object-position: 50% 68%;
 }
 
 h1 {
