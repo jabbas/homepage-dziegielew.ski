@@ -498,7 +498,7 @@ Katalog `applications/homepage/`:
   - w namespace `homepage`.
 - `release.yaml` — `HelmRelease` `homepage`:
   - chart `homepage`,
-  - `version: ">=0.1.0 <1.0.0"`,
+  - `version: ">=0.1.0 <1.0.0"` — od wydania 1.0.0 (2026-11-04, decyzja właściciela) `">=1.0.0 <2.0.0"`; każdy kolejny major wymaga świadomej zmiany zakresu,
   - `interval: 1m`,
   - `install.remediation.retries: 3` i `upgrade.remediation.retries: 3`. Domyślne odinstalowanie przy nieudanej instalacji jest tu nieszkodliwe, bo aplikacja jest bezstanowa.
   - bez `values`,
