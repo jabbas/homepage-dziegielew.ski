@@ -186,11 +186,9 @@ main {
   border: 1px solid var(--color-border);
   border-radius: 50%;
   object-fit: cover;
-  /* Zdjęcie jest pionowe (601×943): okno kadru ma 601 px wysokości, a głowa
-     z brodą zajmuje ok. 628 px (od y≈152 do y≈780), więc nie mieści się
-     w całości. 48% daje okno y≈164–765: obcina po kilkanaście pikseli
-     włosów u góry i brody na dole, mniej więcej po równo. */
-  object-position: 50% 48%;
+  /* Zdjęcie to awatar z GitHuba: kwadrat 460×460 z całą głową, brodą
+     i fragmentem ramion, więc kadr zostaje wyśrodkowany. */
+  object-position: 50% 50%;
 }
 
 h1 {
