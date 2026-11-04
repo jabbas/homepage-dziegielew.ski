@@ -189,6 +189,8 @@ charts/homepage/
     style.css
     photo.jpg
     favicon.svg
+    robots.txt
+    sitemap.xml
   files/nginx/default.conf
   templates/
     _helpers.tpl
@@ -324,6 +326,9 @@ docs/superpowers/specs/
   - `og:image` z adresem absolutnym `https://dziegielew.ski/photo.jpg`,
   - `og:url`.
 - Indeksowanie przez wyszukiwarki dozwolone.
+- Znacznik canonical (tylko `index.html` i `cv.html`, `404.html` bez): `<link rel="canonical" href="https://dziegielew.ski/">` na stronie głównej i `<link rel="canonical" href="https://dziegielew.ski/cv">` na CV. (decyzja właściciela 2026-11-04)
+- `robots.txt`: `User-agent: *`, `Allow: /` oraz `Sitemap: https://dziegielew.ski/sitemap.xml`. (decyzja właściciela 2026-11-04)
+- `sitemap.xml` z dwoma adresami: `https://dziegielew.ski/` i `https://dziegielew.ski/cv` (bez `lastmod`, `changefreq` i `priority`). (decyzja właściciela 2026-11-04)
 
 ### 7.3. Strona główna
 

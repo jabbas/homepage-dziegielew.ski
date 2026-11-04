@@ -111,9 +111,30 @@ all_files=("${html_files[@]}" "$stylesheet")
 # 1. Zasoby zewnętrzne: src=, <link href>, url(, @import wskazujące na http:,
 # https: lub // (<a href> jest dozwolone). @import odrzucamy w całości — strona
 # go nie potrzebuje. Dodatkowo odrzucamy data: (CSP: img-src 'self').
-expect_absent "no external resources" \
-  'src="?(https?:)?//|<link[^>]*href="?(https?:)?//|url\(\s*["'\'']?(https?:)?//|@import' \
-  "${all_files[@]}"
+#
+# Jedyny wyjątek: <link rel="canonical" href="https://dziegielew.ski/..."> —
+# canonical niczego nie ładuje, tylko wskazuje adres strony dla wyszukiwarek.
+# Wyjątek jest wąski: dokładnie ten znacznik i dokładnie ten origin; każdy
+# inny bezwzględny <link href> (inny rel, inny host, http:) nadal jest błędem.
+canonical_link_pattern='<link rel="canonical" href="https://dziegielew\.ski/[^" ]*">'
+external_resource_pattern='src="?(https?:)?//|<link[^>]*href="?(https?:)?//|url\(\s*["'\'']?(https?:)?//|@import'
+external_bad=0
+for file in "${all_files[@]}"; do
+  if [[ ! -f "$file" ]]; then
+    fail "no external resources ($file: brak pliku)"
+    external_bad=1
+    continue
+  fi
+  # Wyjątek usuwamy z treści przed sprawdzeniem; reszta pliku jest sprawdzana jak dotąd.
+  without_canonical="$(sed -E "s#${canonical_link_pattern}##g" <<<"$(flat "$file")")"
+  if grep -Eqi -- "$external_resource_pattern" <<<"$without_canonical"; then
+    fail "no external resources ($file pasuje do: $external_resource_pattern)"
+    external_bad=1
+  fi
+done
+if [[ $external_bad -eq 0 ]]; then
+  pass "no external resources"
+fi
 expect_absent "no data uris" \
   'src="?data:|url\(\s*["'\'']?data:' \
   "${all_files[@]}"
@@ -170,6 +191,62 @@ if [[ -f "$site/favicon.svg" ]]; then
   pass "favicon file exists"
 else
   fail "favicon file exists ($site/favicon.svg)"
+fi
+
+# 6b. SEO (decyzja właściciela 2026-11-04): canonical na stronach głównych,
+# brak canonical na 404, robots.txt ze wskazaniem sitemapy, poprawny sitemap.xml.
+expect_contains_text "canonical: index" \
+  '<link rel="canonical" href="https://dziegielew.ski/">' "$site/index.html"
+expect_contains_text "canonical: cv" \
+  '<link rel="canonical" href="https://dziegielew.ski/cv">' "$site/cv.html"
+expect_absent "canonical: not on 404" 'rel="canonical"' "$site/404.html"
+
+robots="$site/robots.txt"
+if [[ -f "$robots" ]]; then
+  if grep -Fxq -- 'User-agent: *' "$robots"; then
+    pass "robots.txt: user-agent"
+  else
+    fail "robots.txt: user-agent (brak linii 'User-agent: *')"
+  fi
+  if grep -Fxq -- 'Sitemap: https://dziegielew.ski/sitemap.xml' "$robots"; then
+    pass "robots.txt: sitemap"
+  else
+    fail "robots.txt: sitemap (brak dokładnej linii Sitemap)"
+  fi
+else
+  fail "robots.txt: user-agent ($robots: brak pliku)"
+  fail "robots.txt: sitemap ($robots: brak pliku)"
+fi
+
+sitemap="$site/sitemap.xml"
+expected_locations=$'https://dziegielew.ski/\nhttps://dziegielew.ski/cv'
+if [[ -f "$sitemap" ]]; then
+  # Parser XML z biblioteki standardowej Pythona: błąd składni = kod ≠ 0.
+  # Wypisuje wartości <loc> po jednej w wierszu.
+  if actual_locations="$(python3 -c '
+import sys
+import xml.etree.ElementTree as ElementTree
+
+namespace = "{http://www.sitemaps.org/schemas/sitemap/0.9}"
+root = ElementTree.parse(sys.argv[1]).getroot()
+if root.tag != namespace + "urlset":
+    sys.exit("zły element główny: " + root.tag)
+for location in root.iter(namespace + "loc"):
+    print(location.text)
+' "$sitemap" 2>&1)"; then
+    pass "sitemap.xml: well-formed"
+    if [[ "$actual_locations" == "$expected_locations" ]]; then
+      pass "sitemap.xml: locations"
+    else
+      fail "sitemap.xml: locations (oczekiwano: ${expected_locations//$'\n'/ }, jest: ${actual_locations//$'\n'/ })"
+    fi
+  else
+    fail "sitemap.xml: well-formed ($actual_locations)"
+    fail "sitemap.xml: locations (plik nie jest poprawnym XML)"
+  fi
+else
+  fail "sitemap.xml: well-formed ($sitemap: brak pliku)"
+  fail "sitemap.xml: locations ($sitemap: brak pliku)"
 fi
 
 # 7. Arkusz stylów podpięty na każdej stronie (łącznie z 404).

@@ -245,6 +245,28 @@ expect_equal "probe by IP" 200 "$status"
 request "$canonical_host" /healthz
 expect_equal "probe on canonical" 200 "$status"
 
+request "$canonical_host" /robots.txt
+expect_equal "robots status" 200 "$status"
+robots_content_type="$(header_values Content-Type)"
+if [[ "$robots_content_type" == text/plain* ]]; then
+  pass "robots content type"
+else
+  fail "robots content type (jest: $robots_content_type)"
+fi
+
+request "$canonical_host" /sitemap.xml
+expect_equal "sitemap status" 200 "$status"
+sitemap_content_type="$(header_values Content-Type)"
+if [[ "$sitemap_content_type" == text/xml* || "$sitemap_content_type" == application/xml* ]]; then
+  pass "sitemap content type"
+else
+  fail "sitemap content type (jest: $sitemap_content_type)"
+fi
+
+request jabbas.eu /robots.txt
+expect_equal "jabbas.eu robots status" 301 "$status"
+expect_equal "jabbas.eu robots location" "https://$canonical_host/robots.txt" "$(header_values Location)"
+
 photo_expected="$(sha256sum "$chart/files/site/photo.jpg" | cut -d' ' -f1)"
 request "$canonical_host" /photo.jpg
 expect_equal "photo status" 200 "$status"
