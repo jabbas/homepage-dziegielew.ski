@@ -557,6 +557,7 @@ Aplikacja jest bezstanowa, więc cofnięcie jest zawsze bezpieczne.
   - Ryzyko: kto ma token z prawem zapisu do `jabbas/helm-charts` (albo do Release tego repozytorium), może podmienić chart wdrażany do klastra.
   - Złagodzenie: restrykcyjny namespace (Pod Security `restricted`), brak tokena konta serwisowego, kontrola SHA-256 w pipeline.
   - Spłata: kanał OCI z cosign i `OCIRepository.verify`.
+  - 2026-11-04 (decyzja właściciela): dług zostaje świadomie, bez planu spłaty. Właściciel nie chce OCI. Podpisy Helm `.prov` (GPG) dla repozytorium HTTP nic nie dają, bo Flux sprawdza podpisy chartów wyłącznie z rejestrów OCI (`HelmChart.spec.verify`). Jedyna droga bez OCI to źródło `GitRepository` z podpisanymi tagami (`spec.verify`, OpenPGP), ale to osobny projekt z kluczem GPG w CI, nieopłacalny dla strony-wizytówki.
 - **Dwie kopie `helm-index.sh`** (secretspec-operator i to repozytorium).
   - Spłata przy trzecim charcie w `jabbas/helm-charts`: workflow wielokrotnego użytku w `jabbas/helm-charts`.
   - Zapisane w pamięci projektu.
