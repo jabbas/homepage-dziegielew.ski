@@ -26,8 +26,8 @@
 set -euo pipefail
 
 # renovate: datasource=github-releases depName=mikefarah/yq
-YQ_VERSION=v4.54.1
-YQ_SHA256=e68a456f90c577af3fe4960184b3a3cf5c461e0348407c10f107da3a5fec8972
+YQ_VERSION=v4.54.2
+YQ_SHA256=7dd21fe96aac5ecccef949f4e4abecf9f9344dc3a853f5a2b4633c7a7afa7dda
 
 # renovate: datasource=github-releases depName=yannh/kubeconform
 KUBECONFORM_VERSION=v0.8.0
