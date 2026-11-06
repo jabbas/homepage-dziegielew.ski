@@ -7,11 +7,13 @@
 # `version` nie może po prostu "wypchnąć tagu i poczekać na wydanie" — `release`
 # i `helm-index` muszą być w tym samym przebiegu, po `version`.
 #
-# Konwencja commitów (preset angular akcji github-tag-action):
+# Konwencja commitów (domyślny preset `conventionalcommits` akcji
+# github-tag-action od v7):
 #   feat → minor; fix, perf, refactor → patch; docs, chore, ci, test, style,
-#   build → bez wydania. Zmiana łamiąca przed 1.0.0 → minor (next-version.sh).
-#   Uwaga: preset angular NIE rozpoznaje `feat!:` — zmianę łamiącą oznacza
-#   wyłącznie stopka `BREAKING CHANGE:` w treści commita.
+#   build → bez wydania.
+#   Zmianę łamiącą oznacza `feat!:` albo stopka `BREAKING CHANGE:`. Przed 1.0.0
+#   next-version.sh zamienia ją na minor; od 1.0.0 to major (2.0.0), co wymaga
+#   poszerzenia zakresu wersji w flux-homeapps (applications/homepage/release.yaml).
 name: CI
 
 on:
