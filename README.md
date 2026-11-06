@@ -72,8 +72,10 @@ Wersję wylicza `mathieudutour/github-tag-action` z Conventional Commits:
 - **Zmiany treści strony** (tekst, CV, wygląd) to `feat` albo `fix` — **nigdy `docs`**.
   Inaczej strona zmieni się na produkcji bez wydania. `docs` oznacza wyłącznie
   dokumentację repozytorium (np. ten plik).
-- **`feat!:` nie działa.** Preset angular nie rozpoznaje wykrzyknika; zmianę
-  łamiącą oznacza wyłącznie stopka `BREAKING CHANGE:` w treści commita.
+- **Zmiana łamiąca** to `feat!:` albo stopka `BREAKING CHANGE:` (od v7 domyślny
+  preset to `conventionalcommits`). Przed 1.0.0 `next-version.sh` zamienia ją na
+  minor; od 1.0.0 to major (2.0.0), co wymaga poszerzenia zakresu wersji w
+  flux-homeapps (`applications/homepage/release.yaml`).
 - Tag nie ma prefiksu `v` (`0.1.0`, nie `v0.1.0`). Pierwsze wydanie to `0.1.0`,
   z pierwszego commitu `feat`.
 - **Pierwsze wydanie może wymagać ręcznego tagu.** W repozytorium bez żadnego

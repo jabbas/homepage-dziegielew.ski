@@ -7,11 +7,13 @@
 # `version` nie może po prostu "wypchnąć tagu i poczekać na wydanie" — `release`
 # i `helm-index` muszą być w tym samym przebiegu, po `version`.
 #
-# Konwencja commitów (preset angular akcji github-tag-action):
+# Konwencja commitów (domyślny preset `conventionalcommits` akcji
+# github-tag-action od v7):
 #   feat → minor; fix, perf, refactor → patch; docs, chore, ci, test, style,
-#   build → bez wydania. Zmiana łamiąca przed 1.0.0 → minor (next-version.sh).
-#   Uwaga: preset angular NIE rozpoznaje `feat!:` — zmianę łamiącą oznacza
-#   wyłącznie stopka `BREAKING CHANGE:` w treści commita.
+#   build → bez wydania.
+#   Zmianę łamiącą oznacza `feat!:` albo stopka `BREAKING CHANGE:`. Przed 1.0.0
+#   next-version.sh zamienia ją na minor; od 1.0.0 to major (2.0.0), co wymaga
+#   poszerzenia zakresu wersji w flux-homeapps (applications/homepage/release.yaml).
 name: CI
 
 on:
@@ -87,7 +89,7 @@ jobs:
       # previous_version, release_type. Pusty new_version = żaden commit nie wydaje.
       - name: Oblicz następną wersję
         id: calculate
-        uses: mathieudutour/github-tag-action@a22cf08638b34d5badda920f9daf6e72c477b07b # v6.2
+        uses: mathieudutour/github-tag-action@af99e60ce8132224b8e6ebab5023449fe256ed46 # v7.0.0
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           tag_prefix: ""
@@ -113,7 +115,7 @@ jobs:
       # tag lekki na GITHUB_SHA (API createRef).
       - name: Utwórz tag
         if: steps.next.outputs.version != ''
-        uses: mathieudutour/github-tag-action@a22cf08638b34d5badda920f9daf6e72c477b07b # v6.2
+        uses: mathieudutour/github-tag-action@af99e60ce8132224b8e6ebab5023449fe256ed46 # v7.0.0
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           tag_prefix: ""
