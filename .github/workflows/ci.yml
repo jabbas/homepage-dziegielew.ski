@@ -38,7 +38,7 @@ defaults:
 
 jobs:
   test:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -72,7 +72,7 @@ jobs:
   version:
     needs: test
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     timeout-minutes: 10
     permissions:
       contents: write
@@ -135,7 +135,7 @@ jobs:
       ${{ !cancelled() && needs.test.result == 'success'
         && (github.ref_type == 'tag'
           || (needs.version.result == 'success' && needs.version.outputs.version != '')) }}
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     timeout-minutes: 10
     permissions:
       contents: write
@@ -209,7 +209,7 @@ jobs:
   helm-index:
     needs: release
     if: ${{ !cancelled() && needs.release.result == 'success' }}
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     timeout-minutes: 20
     environment: helm-charts
     permissions:
