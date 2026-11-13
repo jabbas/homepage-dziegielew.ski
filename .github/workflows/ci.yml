@@ -46,7 +46,7 @@ jobs:
           persist-credentials: false
       - uses: azure/setup-helm@9bc31f4ebc9c6b171d7bfbaa5d006ae7abdb4310 # v5.0.1
         with:
-          version: v4.3.1
+          version: v4.3.2
       # Przypięte binaria z sumami SHA-256 (yq do testów chartu i indeksu,
       # kubeconform do walidacji manifestów, actionlint do tego workflow).
       - name: Zainstaluj narzędzia
@@ -169,7 +169,7 @@ jobs:
           persist-credentials: false
       - uses: azure/setup-helm@9bc31f4ebc9c6b171d7bfbaa5d006ae7abdb4310 # v5.0.1
         with:
-          version: v4.3.1
+          version: v4.3.2
       # Chart.yaml ma zaślepki 0.0.0; prawdziwa wersja wchodzi tylko tutaj.
       - name: Spakuj chart
         env:
@@ -233,7 +233,7 @@ jobs:
           persist-credentials: false
       - uses: azure/setup-helm@9bc31f4ebc9c6b171d7bfbaa5d006ae7abdb4310 # v5.0.1
         with:
-          version: v4.3.1
+          version: v4.3.2
       # yq parsuje i przepisuje wspólny indeks, więc jest przypięty (z sumą).
       - name: Zainstaluj yq
         run: bash .github/scripts/install-tools.sh yq
